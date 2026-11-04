@@ -1,13 +1,14 @@
-/* Método RK: abertura, abas dos casos e detalhes de navegação. */
+/* Método RK: abertura, letreiro, selo, templo e casos.
+   O movimento não depende de "reduzir movimento": o Windows do dono do projeto tem isso ligado,
+   e letreiro e selo andam por requestAnimationFrame. */
 (function () {
   'use strict';
 
   var html = document.documentElement;
-  var reduz = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var um = function (s, base) { return (base || document).querySelector(s); };
   var todos = function (s, base) { return Array.prototype.slice.call((base || document).querySelectorAll(s)); };
 
-  /* Abertura: roda sozinha em cerca de 2 s. Rolar, tocar ou usar o teclado termina na hora. */
+  /* Abertura: cerca de 2,6 s. Rolar, tocar ou usar o teclado termina na hora. */
   var abertura = um('.abertura');
   var eventos = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
   function retirar() {
@@ -22,9 +23,9 @@
       feito = true;
       html.classList.add('revelar');
       try { sessionStorage.setItem('abertura-vista', '1'); } catch (e) { /* navegação privada */ }
-      setTimeout(retirar, rapido ? 550 : 1250);
+      setTimeout(retirar, rapido ? 600 : 1400);
     };
-    var cedo = setTimeout(function () { revelar(false); }, 850);
+    var cedo = setTimeout(function () { revelar(false); }, 1000);
     var interagiu = function () {
       clearTimeout(cedo);
       revelar(true);
@@ -35,66 +36,113 @@
     retirar();
   }
 
-  /* Surgimento discreto */
-  var surgir = todos('.surge');
+  /* Letreiro: por tempo, para não pular na emenda. Selo: gira devagar. */
+  var faixas = todos('[data-corre]').map(function (el) {
+    var originais = Array.prototype.slice.call(el.children);
+    var clonar = function () {
+      originais.forEach(function (o) {
+        var c = o.cloneNode(true);
+        c.setAttribute('aria-hidden', 'true');
+        el.appendChild(c);
+      });
+    };
+    clonar();
+    while (el.scrollWidth < window.innerWidth * 2 + 200 && el.children.length < 60) { clonar(); clonar(); }
+    return { el: el, vel: parseFloat(el.getAttribute('data-vel')) || 40, x: 0, passo: 0, originais: originais.length };
+  });
+  function medir() {
+    faixas.forEach(function (f) {
+      var alvo = f.el.children[f.originais];
+      f.passo = alvo ? alvo.offsetLeft - f.el.children[0].offsetLeft : 0;
+    });
+  }
+  medir();
+  window.addEventListener('resize', medir);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(medir);
+  var selos = todos('[data-selo] .selo-texto');
+  var giro = 0;
+  var antes = performance.now();
+  function animar(agora) {
+    var dt = Math.min(agora - antes, 80) / 1000;
+    antes = agora;
+    faixas.forEach(function (f) {
+      if (!f.passo) return;
+      f.x -= f.vel * dt;
+      if (f.x <= -f.passo) f.x += f.passo;
+      f.el.style.transform = 'translate3d(' + f.x.toFixed(2) + 'px,0,0)';
+    });
+    giro = (giro + 11 * dt) % 360;
+    selos.forEach(function (s) { s.style.transform = 'rotate(' + giro.toFixed(2) + 'deg)'; });
+    requestAnimationFrame(animar);
+  }
+  requestAnimationFrame(animar);
+
+  /* Surgimentos e o templo que se desenha */
+  var alvos = todos('.surge, [data-templo], [data-surge-foto]');
   if ('IntersectionObserver' in window) {
     var vigia = new IntersectionObserver(function (itens) {
       itens.forEach(function (it) {
         if (it.isIntersecting) { it.target.classList.add('in'); vigia.unobserve(it.target); }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -4% 0px' });
-    surgir.forEach(function (el) { vigia.observe(el); });
+    }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
+    alvos.forEach(function (el) { vigia.observe(el); });
   } else {
-    surgir.forEach(function (el) { el.classList.add('in'); });
+    alvos.forEach(function (el) { el.classList.add('in'); });
   }
 
-  /* O ciclo: a etapa em destaque avança sozinha */
-  var etapas = todos('[data-anel] li');
-  if (etapas.length) {
+  /* O ciclo: a etapa em destaque avança e o ponto acompanha */
+  var anel = um('[data-anel]');
+  if (anel) {
+    var etapas = todos('li', anel);
     var ativa = 0;
+    var voltas = 0;
     etapas[0].classList.add('ativo');
-    if (!reduz) {
-      setInterval(function () {
-        etapas[ativa].classList.remove('ativo');
-        ativa = (ativa + 1) % etapas.length;
-        etapas[ativa].classList.add('ativo');
-      }, 1500);
-    }
+    setInterval(function () {
+      etapas[ativa].classList.remove('ativo');
+      ativa = (ativa + 1) % etapas.length;
+      voltas += 1;
+      etapas[ativa].classList.add('ativo');
+      anel.style.setProperty('--giro', (voltas * 60) + 'deg');
+    }, 1500);
   }
 
-  /* Casos: abas com teclado */
-  var abasBox = um('[data-abas]');
-  if (abasBox) {
-    var abas = todos('[role="tab"]', abasBox);
-    var selecionar = function (aba, foco) {
-      abas.forEach(function (a) {
-        var sim = a === aba;
-        a.setAttribute('aria-selected', sim ? 'true' : 'false');
-        a.tabIndex = sim ? 0 : -1;
-        document.getElementById(a.getAttribute('aria-controls')).hidden = !sim;
+  /* Casos: folhas lado a lado, com setas */
+  var folhas = um('[data-folhas]');
+  if (folhas) {
+    var setas = todos('[data-folha]');
+    var estado = function () {
+      var max = folhas.scrollWidth - folhas.clientWidth - 4;
+      setas.forEach(function (b) {
+        var dir = parseInt(b.getAttribute('data-folha'), 10);
+        b.disabled = dir < 0 ? folhas.scrollLeft <= 4 : folhas.scrollLeft >= max;
       });
-      if (foco) aba.focus();
     };
-    abas.forEach(function (aba, i) {
-      aba.addEventListener('click', function () { selecionar(aba); });
-      aba.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowRight') { e.preventDefault(); selecionar(abas[(i + 1) % abas.length], true); }
-        if (e.key === 'ArrowLeft') { e.preventDefault(); selecionar(abas[(i - 1 + abas.length) % abas.length], true); }
+    setas.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var largura = um('.folha', folhas).getBoundingClientRect().width + parseFloat(getComputedStyle(folhas).columnGap || 0);
+        folhas.scrollBy({ left: largura * parseInt(b.getAttribute('data-folha'), 10), behavior: 'smooth' });
       });
     });
-    selecionar(abas[0]);
+    folhas.addEventListener('scroll', function () { requestAnimationFrame(estado); }, { passive: true });
+    window.addEventListener('resize', estado);
+    estado();
   }
 
-  /* Botão fixo no celular: aparece depois da capa e some perto do fim */
-  var fixo = um('[data-agendar-fixo]');
+  /* Topo sólido e botão fixo no celular */
+  var topo = um('[data-topo]');
   var capa = um('.capa');
-  var final = um('.final');
+  var fixo = um('[data-agendar-fixo]');
+  var final = um('[data-final]');
+  var pendente = false;
   function aoRolar() {
-    if (!fixo || !capa || !final) return;
+    pendente = false;
     var alt = window.innerHeight;
-    fixo.classList.toggle('ligado', capa.getBoundingClientRect().bottom < alt * 0.3 && final.getBoundingClientRect().top > alt * 0.85);
+    var fimCapa = capa.getBoundingClientRect().bottom;
+    topo.classList.toggle('solido', fimCapa < 80);
+    if (fixo && final) fixo.classList.toggle('ligado', fimCapa < alt * 0.3 && final.getBoundingClientRect().top > alt * 0.85);
   }
-  window.addEventListener('scroll', aoRolar, { passive: true });
-  window.addEventListener('resize', aoRolar);
+  function pedir() { if (!pendente) { pendente = true; requestAnimationFrame(aoRolar); } }
+  window.addEventListener('scroll', pedir, { passive: true });
+  window.addEventListener('resize', pedir);
   aoRolar();
 })();
