@@ -8,7 +8,7 @@
   var um = function (s, base) { return (base || document).querySelector(s); };
   var todos = function (s, base) { return Array.prototype.slice.call((base || document).querySelectorAll(s)); };
 
-  /* Abertura: cerca de 2 s. Rolar, tocar ou usar o teclado termina na hora. */
+  /* Abertura: o logo aparece e a tela abre a partir dele, em cerca de 2 s. Rolar, tocar ou usar o teclado termina na hora. */
   var abertura = um('.abertura');
   var eventos = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
   function retirar() {
@@ -25,7 +25,7 @@
       try { sessionStorage.setItem('abertura-vista', '1'); } catch (e) { /* navegação privada */ }
       setTimeout(retirar, rapido ? 600 : 1300);
     };
-    var cedo = setTimeout(function () { revelar(false); }, 800);
+    var cedo = setTimeout(function () { revelar(false); }, 1150);
     var interagiu = function () {
       clearTimeout(cedo);
       revelar(true);
