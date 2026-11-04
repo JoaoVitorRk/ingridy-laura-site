@@ -106,8 +106,9 @@ h3 { font: 500 clamp(1.5rem, 1.3rem + .8vw, 2rem)/1.2 var(--leitura); letter-spa
 /* Capa de revista: o nome atrás da foto */
 .capa { position: relative; min-height: 100svh; overflow: hidden; isolation: isolate; color: var(--areia); background: var(--vinho); display: flex; align-items: flex-end; }
 .capa-fundo { position: absolute; inset: 0; z-index: -3; background: var(--fundo-capa); }
-.capa-nome { position: absolute; z-index: -2; left: var(--margem); top: clamp(66px, 8.8svh, 96px); display: flex; margin: 0; overflow: hidden; padding-bottom: .26em; margin-bottom: -.26em; font: 400 min(21.5vw, 36svh)/.92 var(--display); letter-spacing: -.028em; color: var(--areia); font-variation-settings: "opsz" 96; }
-.capa-nome span { display: block; }
+.capa-nome { position: absolute; z-index: -2; left: var(--margem); top: clamp(66px, 8.8svh, 96px); display: flex; gap: .2em; margin: 0; font: 400 max(10.5vw, min(calc((100vw - 53.3svh + 100px - var(--margem)) / 4.75), 33svh))/.92 var(--display); letter-spacing: -.028em; color: var(--areia); font-variation-settings: "opsz" 40; white-space: nowrap; }
+.cn-palavra { display: flex; overflow: hidden; padding-bottom: .26em; margin-bottom: -.26em; }
+.cn-palavra span { display: block; }
 .capa-foto img { position: absolute; z-index: -1; right: 0; bottom: 0; width: auto; max-width: none; height: clamp(540px, 89svh, 960px); transform-origin: 72% 40%; }
 .capa-veu { position: absolute; z-index: -1; inset: auto 0 0; height: 16%; background: linear-gradient(transparent, rgba(36, 12, 12, .75)); }
 .capa-texto { position: relative; width: min(46vw, 680px); padding: 0 0 clamp(26px, 5.4svh, 58px) var(--margem); }
@@ -123,20 +124,20 @@ h3 { font: 500 clamp(1.5rem, 1.3rem + .8vw, 2rem)/1.2 var(--leitura); letter-spa
 .selo-texto text { font: 600 12.6px var(--texto); letter-spacing: .135em; fill: currentColor; }
 .selo-mono { position: absolute; inset: 27%; width: 46%; height: 46%; }
 
-.js .capa-nome span { transform: translateY(112%); transition: transform 1.05s var(--curva); }
+.js .cn-palavra span { transform: translateY(112%); transition: transform 1.05s var(--curva); }
 .js .capa-foto img { transform: scale(1.075) translateY(2.5%); transition: transform 1.75s var(--curva); }
 .js .sobe > span { transform: translateY(112%); transition: transform .7s var(--curva); }
 .js .capa-sub, .js .capa-acoes, .js .capa-local, .js .selo { opacity: 0; transform: translateY(12px); transition: opacity .45s linear, transform .55s var(--curva); }
-.revelar .capa-nome span, .revelar .capa-foto img, .revelar .sobe > span, .revelar .capa-sub, .revelar .capa-acoes, .revelar .capa-local, .revelar .selo { transform: none; opacity: 1; }
+.revelar .cn-palavra span, .revelar .capa-foto img, .revelar .sobe > span, .revelar .capa-sub, .revelar .capa-acoes, .revelar .capa-local, .revelar .selo { transform: none; opacity: 1; }
 .revelar .capa-foto img { transition-delay: .15s; }
-.revelar .capa-nome span { transition-delay: calc(.22s + var(--i, 0) * 34ms); }
-.revelar .capa-nome span:nth-child(1) { --i: 0; } .revelar .capa-nome span:nth-child(2) { --i: 1; } .revelar .capa-nome span:nth-child(3) { --i: 2; } .revelar .capa-nome span:nth-child(4) { --i: 3; } .revelar .capa-nome span:nth-child(5) { --i: 4; } .revelar .capa-nome span:nth-child(6) { --i: 5; } .revelar .capa-nome span:nth-child(7) { --i: 6; }
+.revelar .cn-palavra span { transition-delay: calc(.22s + var(--i, 0) * 34ms); }
 .revelar .sobe:nth-child(1) > span { transition-delay: .46s; }
-.revelar .sobe:nth-child(2) > span { transition-delay: .54s; }
+.revelar .sobe:nth-child(2) > span { transition-delay: .52s; }
+.revelar .sobe:nth-child(3) > span { transition-delay: .58s; }
 .revelar .capa-sub { transition-delay: .62s; }
 .revelar .capa-acoes { transition-delay: .68s; }
 .revelar .capa-local, .revelar .selo { transition-delay: .74s; }
-.rapido .capa-nome span, .rapido .capa-foto img, .rapido .sobe > span, .rapido .capa-sub, .rapido .capa-acoes, .rapido .capa-local, .rapido .selo { transition-delay: 0s !important; transition-duration: .4s !important; }
+.rapido .cn-palavra span, .rapido .capa-foto img, .rapido .sobe > span, .rapido .capa-sub, .rapido .capa-acoes, .rapido .capa-local, .rapido .selo { transition-delay: 0s !important; transition-duration: .4s !important; }
 
 .faixa { height: clamp(100px, 13vw, 190px); background: linear-gradient(var(--de), var(--para)); margin-bottom: -1px; }
 
@@ -352,17 +353,17 @@ h3 { font: 500 clamp(1.5rem, 1.3rem + .8vw, 2rem)/1.2 var(--leitura); letter-spa
   .topo-agendar { padding: .55em .95em; }
 
   .capa { display: block; min-height: 100svh; padding-top: min(118vw, 54svh); }
-  .capa-nome { top: 74px; left: 16px; font-size: min(28.5vw, 17svh); }
-  .capa-foto img { right: 0; left: auto; top: min(30vw, 14.6svh); bottom: auto; height: auto; width: min(160vw, 81svh); transform-origin: 72% 30%; -webkit-mask-image: linear-gradient(#000 64%, transparent 97%); mask-image: linear-gradient(#000 64%, transparent 97%); }
+  .capa-nome { top: 74px; left: 16px; flex-direction: column; gap: 0; font-size: min(28.5vw, 17svh); }
+  .capa-foto img { right: 0; left: auto; top: min(30vw, 18svh); bottom: auto; height: auto; width: min(160vw, 81svh); transform-origin: 72% 30%; -webkit-mask-image: linear-gradient(#000 64%, transparent 97%); mask-image: linear-gradient(#000 64%, transparent 97%); }
   .capa-veu { display: none; }
   .capa-texto { width: 100%; padding: 0 var(--margem) 34px; }
-  .capa h1 { font-size: clamp(2.5rem, 11.4vw, 3.3rem); }
+  .capa h1 { font-size: clamp(2.375rem, 10.5vw, 3.3rem); }
   .capa-sub { font-size: 1.03rem; margin-top: .7em; }
   .capa-acoes { margin-top: 1em; }
   .capa-acoes .botao { width: 100%; }
   .capa-acoes .link { display: none; }
   .capa-local { margin-top: .9em; }
-  .selo { right: auto; left: 10px; top: min(78vw, 38svh); bottom: auto; width: 78px; }
+  .selo { right: auto; left: 10px; top: min(78vw, 42svh); bottom: auto; width: 78px; }
 
   .problema, .jornada, .paraquem, .perguntas, .quem, .casos-topo { grid-template-columns: minmax(0, 1fr); }
   .anel { max-width: 400px; }
