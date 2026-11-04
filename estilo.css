@@ -156,6 +156,7 @@ h3 { font: 500 clamp(1.5rem, 1.3rem + .8vw, 2rem)/1.2 var(--leitura); letter-spa
 .anel-ponto { fill: var(--bordo); transform-origin: 300px 300px; transform: rotate(var(--giro)); transition: transform 1s var(--curva); }
 .anel li { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%); padding: .1em .4em; background: var(--papel); font: 500 clamp(1.1rem, .95rem + .46vw, 1.3rem)/1.15 var(--leitura); white-space: nowrap; color: var(--tinta-2); transition: color .35s linear; }
 .anel li.ativo { color: var(--bordo); font-style: italic; }
+.problema-texto > p.dor-destaque { font: italic 500 clamp(1.5rem, 1.3rem + .6vw, 1.85rem)/1.2 var(--leitura); color: var(--bordo); }
 .anel figcaption { position: absolute; inset: 33%; display: flex; align-items: center; justify-content: center; text-align: center; font: 500 clamp(1.25rem, 1rem + .8vw, 1.65rem)/1.18 var(--leitura); color: var(--bordo); }
 .anel figcaption em { font-style: italic; }
 
@@ -203,6 +204,7 @@ h3 { font: 500 clamp(1.5rem, 1.3rem + .8vw, 2rem)/1.2 var(--leitura); letter-spa
 .pilar-num { display: block; font: 400 clamp(3.4rem, 5.2vw, 5rem)/1 var(--display); font-variation-settings: "opsz" 96; color: var(--salvia); margin-bottom: .1em; }
 .pilar h3 { min-height: 3.5em; display: flex; align-items: flex-start; justify-content: center; }
 .pilar > p { margin-top: .5em; }
+.pilar > p.pilar-para { font: italic 500 1.24rem/1.25 var(--leitura); color: var(--salvia); }
 .pilar ul { margin-top: 1em; text-align: left; border-top: 1px solid var(--fio-escuro); }
 .pilar ul li { padding: .66em 0; border-bottom: 1px solid var(--fio-escuro); line-height: 1.42; font-size: 1.03rem; }
 
@@ -225,11 +227,13 @@ h3 { font: 500 clamp(1.5rem, 1.3rem + .8vw, 2rem)/1.2 var(--leitura); letter-spa
 .ritmo h3 { font-style: italic; font-weight: 500; color: var(--bordo); margin-bottom: .22em; }
 .ritmo p { color: var(--tinta-2); }
 .ritmo strong { color: var(--tinta); font-weight: 700; }
+.junto { white-space: nowrap; }
 
 /* Para quem */
 .paraquem { background: var(--salvia); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(26px, 5vw, 80px); align-items: start; padding: clamp(26px, 3.4vw, 50px) max(var(--margem), calc((100vw - var(--largura)) / 2)) clamp(36px, 4vw, 60px); }
 .paraquem .sobre { color: var(--musgo); }
 .paraquem h2 { color: var(--musgo); }
+.paraquem-intro { margin-bottom: .7em; font-weight: 600; color: var(--musgo); }
 .paraquem-lista li { position: relative; padding: .7em 0 .7em 2.1em; border-top: 1px solid rgba(50, 52, 28, .32); font-weight: 600; line-height: 1.38; }
 .paraquem-lista li::before { content: ""; position: absolute; left: .15em; top: 1.05em; width: .95em; height: .5em; border-left: 1.5px solid var(--musgo); border-bottom: 1.5px solid var(--musgo); transform: rotate(-45deg); }
 .paraquem-nao { padding-top: 1em; border-top: 1px solid rgba(50, 52, 28, .32); }
@@ -317,7 +321,7 @@ h3 { font: 500 clamp(1.5rem, 1.3rem + .8vw, 2rem)/1.2 var(--leitura); letter-spa
 .final-marca { position: absolute; z-index: -1; right: -6vw; top: -8%; width: min(64vw, 780px); height: min(64vw, 780px); color: var(--ouro-claro); opacity: .05; pointer-events: none; }
 .final .sobre { color: var(--ouro-claro); }
 .final-texto { display: grid; justify-items: start; }
-.final h2 { font-size: clamp(2.8rem, 1.7rem + 4.6vw, 6rem); line-height: 1.02; }
+.final h2 { font-size: clamp(2.3rem, 1.6rem + 3vw, 4.4rem); line-height: 1.06; }
 .final h2 em { color: var(--ouro-claro); }
 .final-texto > p:not(.sobre) { margin: 1.1em 0 1.5em; max-width: 31em; font-size: 1.125rem; }
 .final-onde { display: grid; gap: .95em; justify-items: start; padding-left: clamp(0px, 3vw, 44px); border-left: 1px solid var(--fio-escuro); }
@@ -397,6 +401,7 @@ h3 { font: 500 clamp(1.5rem, 1.3rem + .8vw, 2rem)/1.2 var(--leitura); letter-spa
   .pilar h3 { min-height: 0; }
   .jornada-lado, .perguntas-lado { position: static; }
   .ritmo li { grid-template-columns: 78px minmax(0, 1fr); }
+  .ritmo strong { display: block; margin-bottom: .1em; }
   .vazado { font-size: 3.1rem; }
   .folha { flex-basis: 88vw; grid-template-columns: minmax(0, 1fr); min-height: 0; }
   .folha-num { display: none; }
