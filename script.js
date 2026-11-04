@@ -1,6 +1,6 @@
-/* Método RK: abertura, letreiro, selo, templo e casos.
+/* Método RK: abertura, selo, templo e casos.
    O movimento não depende de "reduzir movimento": o Windows do dono do projeto tem isso ligado,
-   e letreiro e selo andam por requestAnimationFrame. */
+   e o selo anda por requestAnimationFrame. */
 (function () {
   'use strict';
 
@@ -8,7 +8,7 @@
   var um = function (s, base) { return (base || document).querySelector(s); };
   var todos = function (s, base) { return Array.prototype.slice.call((base || document).querySelectorAll(s)); };
 
-  /* Abertura: cerca de 2,6 s. Rolar, tocar ou usar o teclado termina na hora. */
+  /* Abertura: cerca de 2 s. Rolar, tocar ou usar o teclado termina na hora. */
   var abertura = um('.abertura');
   var eventos = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
   function retirar() {
@@ -23,9 +23,9 @@
       feito = true;
       html.classList.add('revelar');
       try { sessionStorage.setItem('abertura-vista', '1'); } catch (e) { /* navegação privada */ }
-      setTimeout(retirar, rapido ? 600 : 1400);
+      setTimeout(retirar, rapido ? 600 : 1300);
     };
-    var cedo = setTimeout(function () { revelar(false); }, 1000);
+    var cedo = setTimeout(function () { revelar(false); }, 800);
     var interagiu = function () {
       clearTimeout(cedo);
       revelar(true);
@@ -36,41 +36,13 @@
     retirar();
   }
 
-  /* Letreiro: por tempo, para não pular na emenda. Selo: gira devagar. */
-  var faixas = todos('[data-corre]').map(function (el) {
-    var originais = Array.prototype.slice.call(el.children);
-    var clonar = function () {
-      originais.forEach(function (o) {
-        var c = o.cloneNode(true);
-        c.setAttribute('aria-hidden', 'true');
-        el.appendChild(c);
-      });
-    };
-    clonar();
-    while (el.scrollWidth < window.innerWidth * 2 + 200 && el.children.length < 60) { clonar(); clonar(); }
-    return { el: el, vel: parseFloat(el.getAttribute('data-vel')) || 40, x: 0, passo: 0, originais: originais.length };
-  });
-  function medir() {
-    faixas.forEach(function (f) {
-      var alvo = f.el.children[f.originais];
-      f.passo = alvo ? alvo.offsetLeft - f.el.children[0].offsetLeft : 0;
-    });
-  }
-  medir();
-  window.addEventListener('resize', medir);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(medir);
+  /* Selo: gira devagar */
   var selos = todos('[data-selo] .selo-texto');
   var giro = 0;
   var antes = performance.now();
   function animar(agora) {
     var dt = Math.min(agora - antes, 80) / 1000;
     antes = agora;
-    faixas.forEach(function (f) {
-      if (!f.passo) return;
-      f.x -= f.vel * dt;
-      if (f.x <= -f.passo) f.x += f.passo;
-      f.el.style.transform = 'translate3d(' + f.x.toFixed(2) + 'px,0,0)';
-    });
     giro = (giro + 11 * dt) % 360;
     selos.forEach(function (s) { s.style.transform = 'rotate(' + giro.toFixed(2) + 'deg)'; });
     requestAnimationFrame(animar);
@@ -84,7 +56,7 @@
       itens.forEach(function (it) {
         if (it.isIntersecting) { it.target.classList.add('in'); vigia.unobserve(it.target); }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px 12% 0px' });
     alvos.forEach(function (el) { vigia.observe(el); });
   } else {
     alvos.forEach(function (el) { el.classList.add('in'); });
